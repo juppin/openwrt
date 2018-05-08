@@ -1,3 +1,5 @@
+include ./legacy.mk
+
 DEVICE_VARS += TPLINK_HWID TPLINK_HWREV TPLINK_FLASHLAYOUT TPLINK_HEADER_VERSION TPLINK_BOARD_NAME
 
 # combine kernel and rootfs into one image
@@ -30,7 +32,7 @@ define Build/mktplinkfw-combined
 		-m $(TPLINK_HEADER_VERSION) \
 		-k $@ \
 		-o $@.new \
-		-s -S \
+		-s \
 		-c
 	@mv $@.new $@
 endef
@@ -58,12 +60,11 @@ define Device/tplink
   TPLINK_HWREV := 0x1
   TPLINK_HEADER_VERSION := 1
   LOADER_TYPE := gz
-  KERNEL := kernel-bin | patch-cmdline | lzma
-  KERNEL_INITRAMFS := kernel-bin | patch-cmdline | lzma | mktplinkfw-combined
-#  IMAGES := sysupgrade.bin
+  KERNEL := kernel-bin | append-dtb | lzma
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | lzma
   IMAGES := sysupgrade.bin factory.bin
   IMAGE/sysupgrade.bin := append-rootfs | mktplinkfw sysupgrade
-#  IMAGE/factory.bin := append-rootfs | mktplinkfw factory | a
+  IMAGE/factory.bin := append-rootfs | mktplinkfw factory
 endef
 
 define Device/tplink-nolzma
@@ -71,9 +72,10 @@ $(Device/tplink)
   LOADER_FLASH_OFFS := 0x22000
   COMPILE := loader-$(1).gz
   COMPILE/loader-$(1).gz := loader-okli-compile
-  #KERNEL := copy-file $(KDIR)/vmlinux.bin.lzma | uImage lzma -M 0x4f4b4c49 | loader-okli $(1)
-  KERNEL:= kernel-bin | append-dtb | lzma |uImage lzma -M 0x4f4b4c49 | loader-okli $(1)
-  KERNEL_INITRAMFS := copy-file $(KDIR)/vmlinux-initramfs.bin.lzma | loader-kernel-cmdline | mktplinkfw-combined
+#  KERNEL := copy-file $(KDIR)/vmlinux.bin.lzma | uImage lzma -M 0x4f4b4c49 | loader-okli $(1)
+  KERNEL := kernel-bin | append-dtb | lzma |uImage lzma -M 0x4f4b4c49 | loader-okli $(1)
+  KERNEL_INITRMFS := kernel-bin | append-dtb | lzma |uImage lzma -M 0x4f4b4c49 | loader-okli $(1)
+#  KERNEL_INITRAMFS := copy-file $(KDIR)/vmlinux-initramfs.bin.lzma | loader-kernel-cmdline | mktplinkfw-combined
 endef
 
 define Device/tplink-4m
@@ -105,6 +107,17 @@ $(Device/tplink)
   TPLINK_FLASHLAYOUT := 16Mlzma
   IMAGE_SIZE := 15872k
 endef
+
+define Device/tl-mr3420-v1
+  $(Device/tplink-4m)
+  ATH_SOC := ar7241
+  DEVICE_TITLE := TP-LINK TL-MR3420 v1
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-ledtrig-usbport
+  BOARDNAME := TL-MR3420
+  DEVICE_PROFILE := TLMR3420
+  TPLINK_HWID := 0x34200001
+endef
+TARGET_DEVICES += tl-mr3420-v1
 
 define Device/tl_wr1043nd_v1
   $(Device/tplink-8m)
