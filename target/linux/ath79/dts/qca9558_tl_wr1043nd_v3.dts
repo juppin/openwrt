@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/dts-v1/;
+
+#include "qca9558_tl_wr1043nd_v2.dts"
+
+/ {
+	compatible = "tplink,tl-wr1043nd-v2", "qca,qca9557";
+	model = "TP-Link TL-WR1043ND V2";
+};
