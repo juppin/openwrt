@@ -10,3 +10,11 @@ define Device/tl_wr1043nd_v1
   TPLINK_HWID := 0x10430001
 endef
 TARGET_DEVICES += tl_wr1043nd_v1
+
+define Device/tl-wr841-v8
+  $(Device/tplink-4mlzma)
+  ATH_SOC := ar9341
+  DEVICE_TITLE := TP-LINK TL-WR841N/ND v8
+  TPLINK_HWID := 0x08410008
+endef
+TARGET_DEVICES += tl-wr841-v8
