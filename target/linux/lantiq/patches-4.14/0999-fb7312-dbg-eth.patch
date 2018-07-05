@@ -1,0 +1,38 @@
+--- a/drivers/net/ethernet/lantiq_etop.c
++++ b/drivers/net/ethernet/lantiq_etop.c
+@@ -590,7 +590,9 @@ ltq_etop_mdio_init(struct net_device *de
+ 	snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+ 		priv->pdev->name, priv->pdev->id);
+ 
++	printk("%s %d: %s %s", __FILE__, __LINE__, __FUNCTION__, of_node_full_name(priv->pdev->dev.of_node));
+ 	mdio_np = of_get_child_by_name(priv->pdev->dev.of_node, "mdio-bus");
++	printk("%s %d: %s %s", __FILE__, __LINE__, __FUNCTION__, of_node_full_name(mdio_np));
+ 
+ 	if (mdio_np)
+ 		ret = of_mdiobus_register(priv->mii_bus, mdio_np);
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -274,11 +274,13 @@ static int at803x_probe(struct phy_devic
+ 	    phydev->drv->phy_id != ATH8032_PHY_ID)
+ 		goto does_not_require_reset_workaround;
+ 
++	printk("%s %d: %s %s", __FILE__, __LINE__, __FUNCTION__, of_node_full_name(dev->of_node));
+ 	gpiod_reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(gpiod_reset))
+ 		return PTR_ERR(gpiod_reset);
+ 
+ 	priv->gpiod_reset = gpiod_reset;
++	printk("%s %d: %s gpio_desc[0x%08x]", __FILE__, __LINE__, __FUNCTION__, priv->gpiod_reset);
+ 
+ does_not_require_reset_workaround:
+ 	phydev->priv = priv;
+@@ -415,6 +417,9 @@ static void at803x_link_change_notify(st
+ 			gpiod_set_value(priv->gpiod_reset, 0);
+ 			msleep(1);
+ 
++			printk("%s %d: %s asserted gpio_desc[0x%08x]",
++				__FILE__, __LINE__, __FUNCTION__, priv->gpiod_reset);
++
+ 			at803x_context_restore(phydev, &context);
+ 
+ 			phydev_dbg(phydev, "%s(): phy was reset\n",
