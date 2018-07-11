@@ -16,3 +16,15 @@
 	interrupt-parent = <&cpuintc>;
 	interrupts = <2>;
 };
+
+&eth0 {
+	phy-mode = "mii";
+};
+
+&mdio1 {
+	status = "okay";
+};
+
+&eth1 {
+	status = "okay";
+};
