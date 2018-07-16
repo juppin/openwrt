@@ -60,6 +60,15 @@ define Device/tl-wr740n-v2
 endef
 TARGET_DEVICES += tl-wr740n-v2
 
+define Device/buffalo-whr-g300n-v2
+  $(Device/tplink-4m)
+  ATH_SOC := ar7240
+  DEVICE_TITLE := Buffalo WHR-G300N V2
+  TPLINK_HWID := 0x07400001
+  SUPPORTED_DEVICES := buffalo,whr-g300n-v2 whr-g300n-v2
+endef
+TARGET_DEVICES += buffalo-whr-g300n-v2
+
 define Device/tl-wr740nd-v4
   $(Device/tplink-4mlzma)
   ATH_SOC := ar9331
